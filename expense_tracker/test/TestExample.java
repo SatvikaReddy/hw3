@@ -5,6 +5,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 import java.util.List;
+
+import javax.swing.table.DefaultTableModel;
+
 import java.text.ParseException;
 
 import org.junit.Before;
@@ -111,6 +114,35 @@ public class TestExample {
         // Check the total cost after removing the transaction
         double totalCost = getTotalCost();
         assertEquals(0.00, totalCost, 0.01);
+    }
+
+
+    @Test
+    public void testViewUpdateAddTransaction() {
+        // Pre-condition: The view's table model is empty
+        DefaultTableModel tableModel = view.getTableModel();
+        assertEquals(0, tableModel.getRowCount());
+
+        // Adding a transaction
+        double amount = 50.00;
+        String category = "food";
+        controller.addTransaction(amount, category); // This should update the model and the view
+
+        // Post-condition: Check the view's table model has one row added: 2 exist because 1 is total row
+        assertEquals(1+1, tableModel.getRowCount());
+
+        // Check the contents of the table model
+        double tableAmount = (Double) tableModel.getValueAt(0, 1); // Assuming amount is at column index 1
+        String tableCategory = (String) tableModel.getValueAt(0, 2); // Assuming category is at column index 2
+
+        // Verify that the view's table model contains the transaction details
+        assertEquals(amount, tableAmount, 0.01);
+        assertEquals(category, tableCategory);
+
+        // Verifying the total cost displayed in the view matches the expected value
+        // Total cost is displayed in the last row, last column
+        double displayedTotalCost = (Double) tableModel.getValueAt(tableModel.getRowCount() - 1, 3);
+        assertEquals(amount, displayedTotalCost, 0.01);
     }
     
 }
