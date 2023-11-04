@@ -123,7 +123,7 @@ public class TestExample {
         DefaultTableModel tableModel = view.getTableModel();
         assertEquals(0, tableModel.getRowCount());
 
-        // Adding a transaction
+        // Perform action: Adding a transaction
         double amount = 50.00;
         String category = "food";
         controller.addTransaction(amount, category); // This should update the model and the view
@@ -143,6 +143,45 @@ public class TestExample {
         // Total cost is displayed in the last row, last column
         double displayedTotalCost = (Double) tableModel.getValueAt(tableModel.getRowCount() - 1, 3);
         assertEquals(amount, displayedTotalCost, 0.01);
+    }
+
+    @Test
+    public void testInvalidInput() {
+        // Pre Condition: remember the initial total cost
+        double initialTotalCost = getTotalCost();
+        DefaultTableModel tableModel = view.getTableModel();
+        assertEquals(0, tableModel.getRowCount());
+
+        // Perform Action: Attempt to add a transaction with invalid amount
+        double invalidAmount = -1;
+        String category = "food";
+        
+        boolean result = controller.addTransaction(invalidAmount, category);
+
+        // Post Condition : Assuming controller.addTransaction() returns false if the transaction is invalid
+        // Transactions and Total Cost are unchanged
+        assertEquals("Total cost should not change after invalid input",
+                     initialTotalCost, getTotalCost(), 0.01);
+        assertEquals("Transactions list should not change after invalid input",
+                     0, model.getTransactions().size());
+        
+        // View shouldn't have changed 
+        assertEquals(0, tableModel.getRowCount());
+
+        // Action: Attempt to add a transaction with invalid category
+        double amount = 50.0;
+        String invalidCategory = ""; // Assuming empty category is invalid
+
+        result = controller.addTransaction(amount, invalidCategory);
+
+        // Post Condition : Assuming controller.addTransaction() returns false if the transaction is invalid
+        // Assert: Transactions and Total Cost are unchanged again
+        assertEquals("Total cost should not change after invalid input",
+                     initialTotalCost, getTotalCost(), 0.01);
+        assertEquals("Transactions list should not change after invalid input",
+                     0, model.getTransactions().size());
+        // View shouldn't have changed 
+        assertEquals(0, tableModel.getRowCount());
     }
     
 }
