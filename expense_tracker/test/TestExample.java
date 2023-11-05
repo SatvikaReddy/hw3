@@ -6,10 +6,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Date;
 import java.util.List;
 
-import javax.swing.table.DefaultTableModel;
-
-import java.text.ParseException;
-
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,6 +28,16 @@ public class TestExample {
     view = new ExpenseTrackerView();
     controller = new ExpenseTrackerController(model, view);
   }
+
+    @After
+    public void tearDown() {
+        if (view != null) {
+            view.dispose();
+        }
+        model = null;
+        view = null;
+        controller = null;
+    }
 
     public double getTotalCost() {
         double totalCost = 0.0;
