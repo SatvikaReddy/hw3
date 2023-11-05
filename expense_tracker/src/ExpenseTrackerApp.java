@@ -67,6 +67,11 @@ public class ExpenseTrackerApp {
     JOptionPane.showMessageDialog(view,exception.getMessage());
     view.toFront();
    }});
+
+   view.addUndoListener(e -> {
+    int[] rowSelected = view.getJTable().getSelectedRows();
+    controller.removeTransaction(rowSelected);
+  });
     
 
   }

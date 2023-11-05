@@ -26,6 +26,7 @@ public class ExpenseTrackerView extends JFrame {
 
   private JTextField amountFilterField;
   private JButton amountFilterBtn;
+  private JButton undoBtn;
 
   
 
@@ -63,6 +64,7 @@ public class ExpenseTrackerView extends JFrame {
     amountFilterBtn = new JButton("Filter by Amount");
   
 
+    undoBtn = new JButton("Undo");
   
     // Layout components
     JPanel inputPanel = new JPanel();
@@ -75,6 +77,8 @@ public class ExpenseTrackerView extends JFrame {
     JPanel buttonPanel = new JPanel();
     buttonPanel.add(amountFilterBtn);
     buttonPanel.add(categoryFilterBtn);
+
+    buttonPanel.add(undoBtn);
   
     // Add panels to frame
     add(inputPanel, BorderLayout.NORTH);
@@ -92,11 +96,16 @@ public class ExpenseTrackerView extends JFrame {
   public DefaultTableModel getTableModel() {
     return model;
   }
+
+  public JTable getJTable() {
+    return transactionsTable;
+  }
     
 
   public List<Transaction> getTransactionsTable() {
     return (List<Transaction>) transactionsTable;
   }
+  
 
   public double getAmountField() {
     if(amountField.getText().isEmpty()) {
@@ -133,6 +142,10 @@ public class ExpenseTrackerView extends JFrame {
     amountFilterBtn.addActionListener(listener);
   }
 
+  public void addUndoListener(ActionListener listener) {
+    undoBtn.addActionListener(listener);
+  }
+
   public double getAmountFilterInput() {
     String input = JOptionPane.showInputDialog(this, "Enter Amount Filter:");
     try {
@@ -142,6 +155,10 @@ public class ExpenseTrackerView extends JFrame {
         // You can show an error message or return a default value
         return 0.0; // Default value (or any other appropriate value)
     }
+  }
+
+  public JButton getUndoBtn() {
+    return undoBtn;
   }
 
   public void refreshTable(List<Transaction> transactions) {
@@ -168,7 +185,6 @@ public class ExpenseTrackerView extends JFrame {
   
     }  
   
-
   public JButton getAddTransactionBtn() {
     return addTransactionBtn;
   }

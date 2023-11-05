@@ -72,4 +72,16 @@ public class ExpenseTrackerController {
       view.toFront();}
 
   }
+  public boolean removeTransaction(int[] row) {
+    if (row.length < 1 || row[0] >= model.getTransactions().size()) {
+      JOptionPane.showMessageDialog(view, "No row selected.");
+      throw new IllegalArgumentException();
+    } else {
+      Transaction t = model.getTransactions().get(row[0]);
+      model.removeTransaction(t);
+      refresh();
+      return true;
+    }
+  }
+
 }
