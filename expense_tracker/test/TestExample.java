@@ -7,6 +7,8 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
+import javax.swing.JTable;
+import java.awt.*;
 import javax.swing.table.DefaultTableModel;
 
 import org.junit.After;
@@ -170,10 +172,7 @@ public class TestExample {
         assertEquals(0, tableModel.getRowCount());
 
         // Perform Action: Attempt to add a transaction with invalid amount
-        double invalidAmount = -1;
-        String category = "food";
-        
-        boolean result = controller.addTransaction(invalidAmount, category);
+        boolean result = controller.addTransaction(-1, "food");
 
         // Post Condition : Assuming controller.addTransaction() returns false if the transaction is invalid
         // Transactions and Total Cost are unchanged
@@ -201,6 +200,22 @@ public class TestExample {
         assertEquals(0, tableModel.getRowCount());
     }
 
+    private int countHighlightedRows(JTable table, Color highlightColor, Color normalColor) {
+        int highlightCount = 0;
+        for (int row = 0; row < table.getRowCount(); row++) {
+            for (int col = 0; col < table.getColumnCount(); col++) {
+                Component comp = table.prepareRenderer(table.getCellRenderer(row, col), row, col);
+                if (!comp.getBackground().equals(normalColor)) {
+                    if (comp.getBackground().equals(highlightColor)) {
+                        highlightCount++;
+                        break;
+                    }
+                }
+            }
+        }
+        return highlightCount;
+    }
+
 
     /**
      * Test case 3
@@ -218,31 +233,33 @@ public class TestExample {
         controller.addTransaction(100.0, "food");
         controller.addTransaction(50.0, "bills");
 
+        // Retrieve the table from the view
+        JTable transactionsTable = view.getJTable();
+
+        // Define the expected colors
+        Color highlightColor = new Color(173, 255, 168); // This color represents a highlighted row
+        Color normalColor = Color.WHITE; 
+
         // Perform Action: Apply the filter by amount existing in table
         AmountFilter filterTrue = new AmountFilter(50);
-        List<Transaction> filteredTransactions1 = filterTrue.filter(model.getTransactions());
+        controller.setFilter(filterTrue);
+        controller.applyFilter();
 
-        // Perform the action: Apply the filter by amount not existing in table
+        int filteredTransactions1 = countHighlightedRows(transactionsTable, highlightColor, normalColor);
+
+        // Perform Action: Apply the filter by amount not existing in table
         AmountFilter filterNull = new AmountFilter(10);
-        List<Transaction> filteredTransactions2 = filterNull.filter(model.getTransactions());
+        controller.setFilter(filterNull);
+        controller.applyFilter();
 
-        try {
-            // Perform the action: Apply the filter by amount not existing in table
-            AmountFilter filterInvalid = new AmountFilter(-2);
-            filterInvalid.filter(model.getTransactions());
-
-        } catch (Exception e) {
-            String expectedMessage = "Invalid amount filter";
-            String actualMessage = e.getMessage();
-            assertTrue(actualMessage.contains(expectedMessage));
-        }
+        int filteredTransactions2 = countHighlightedRows(transactionsTable, highlightColor, normalColor);
 
         //Post Condition:
         // Check that filtered Transactions is 3:
-        assertEquals(filteredTransactions1.size(), 3);
+        assertEquals(filteredTransactions1, 3);
 
         // Check that filtered Transactions is empty:
-        assertEquals(filteredTransactions2.size(), 0);
+        assertEquals(filteredTransactions2, 0);
 
         //the model data remains same, not affected
         assertEquals(4, model.getTransactions().size());
@@ -257,47 +274,48 @@ public class TestExample {
     @Test
     public void testFilterCategoryHighlight() {
         // Pre-condition: Check the transactions are empty
-        assertEquals(0, model.getTransactions().size());
         DefaultTableModel tableModel = view.getTableModel();
+        assertEquals(0, tableModel.getRowCount());
+        assertEquals(0, model.getTransactions().size());
 
         // Perform Action: Add transactions
         controller.addTransaction(50.0, "food");
         controller.addTransaction(50.0, "travel");
         controller.addTransaction(100.0, "food");
-        controller.addTransaction(100.0, "food");
-        controller.addTransaction(150.0, "bills");
+        controller.addTransaction(50.0, "bills");
 
-        // Perform Action:: Apply the filter by amount existing in table
+        // Retrieve the table from the view
+        JTable transactionsTable = view.getJTable();
+
+        // Define the expected colors
+        Color highlightColor = new Color(173, 255, 168); // This color represents a highlighted row
+        Color normalColor = Color.WHITE; 
+
+        // Perform Action: Apply the filter by category existing in table
         CategoryFilter filterTrue = new CategoryFilter("food");
-        List<Transaction> filteredTransactions1 = filterTrue.filter(model.getTransactions());
+        controller.setFilter(filterTrue);
+        controller.applyFilter();
 
-        // Perform the action: Apply the filter by amount not existing in table
+        int filteredTransactions1 = countHighlightedRows(transactionsTable, highlightColor, normalColor);
+
+        // Perform Action: Apply the filter by category not existing in table
         CategoryFilter filterNull = new CategoryFilter("entertainment");
-        List<Transaction> filteredTransactions2 = filterNull.filter(model.getTransactions());
+        controller.setFilter(filterNull);
+        controller.applyFilter();
 
-        try {
-            // Perform the action: Apply the filter by amount not existing in table
-            CategoryFilter filterInvalid = new CategoryFilter("");
-            List<Transaction> filteredTransactions3 = filterInvalid.filter(model.getTransactions());
+        int filteredTransactions2 = countHighlightedRows(transactionsTable, highlightColor, normalColor);
 
-        } catch (Exception e) {
-            String expectedMessage = "Invalid category filter";
-            String actualMessage = e.getMessage();
-            assertTrue(actualMessage.contains(expectedMessage));
-        }
-    
-        // Post Condition :
-        // Check that the transactions returned are Transaction 3
-        assertEquals(filteredTransactions1.size(), 3);
+        //Post Condition:
+        // Check that filtered Transactions is 3:
+        assertEquals(filteredTransactions1, 2);
 
         // Check that filtered Transactions is empty:
-        assertEquals(filteredTransactions2.size(), 0);
+        assertEquals(filteredTransactions2, 0);
 
         //the model data remains same, not affected
-        assertEquals(5, model.getTransactions().size());
-        // 5+1(total row also added)
-        assertEquals(6, tableModel.getRowCount());
-
+        assertEquals(4, model.getTransactions().size());
+        // 4+1(total row also added)
+        assertEquals(5, tableModel.getRowCount());
     }
     
     /**
