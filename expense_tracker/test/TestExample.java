@@ -302,4 +302,22 @@ public class TestExample {
 
     }
     
+    /**
+     * Test case 5
+     */
+    @Test
+    public void undoDisallowed() {
+      // Pre-condition: List of transactions is empty
+      assertEquals(0, model.getTransactions().size());
+      // Perform the action: try undo
+      try {
+        controller.removeTransaction(new int[0]);
+
+        } catch (Exception e) {
+            assertEquals("Undo Disallowed.", e.getMessage());
+        }
+      // Post-condition: List of transactions is still empty
+      assertEquals(0, model.getTransactions().size());
+    }
+
 }
