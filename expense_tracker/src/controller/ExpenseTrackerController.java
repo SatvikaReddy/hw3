@@ -77,7 +77,11 @@ public class ExpenseTrackerController {
       Transaction t = model.getTransactions().get(row[0]);
       model.removeTransaction(t);
       refresh();
-    } else {
+    } else if(row.length < 1 && model.getTransactions().size()>0){
+      JOptionPane.showMessageDialog(view, "Undo Disallowed, Select a row");
+      throw new IllegalArgumentException("Undo Disallowed.");
+    }
+    else {
       JOptionPane.showMessageDialog(view, "Undo Disallowed.");
       throw new IllegalArgumentException("Undo Disallowed.");
     }

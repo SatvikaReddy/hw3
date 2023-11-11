@@ -7,7 +7,6 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
-import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import org.junit.After;
