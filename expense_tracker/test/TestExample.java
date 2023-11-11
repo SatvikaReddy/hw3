@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
-import java.awt.*;
 
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
@@ -307,17 +306,42 @@ public class TestExample {
      */
     @Test
     public void undoDisallowed() {
-      // Pre-condition: List of transactions is empty
-      assertEquals(0, model.getTransactions().size());
-      // Perform the action: try undo
-      try {
+        // Pre-condition: List of transactions is empty
+        assertEquals(0, model.getTransactions().size());
+        // Perform the action: try undo
+        try {
         controller.removeTransaction(new int[0]);
 
         } catch (Exception e) {
             assertEquals("Undo Disallowed.", e.getMessage());
         }
-      // Post-condition: List of transactions is still empty
-      assertEquals(0, model.getTransactions().size());
+        // Post-condition: List of transactions is still empty
+        assertEquals(0, model.getTransactions().size());
     }
+
+    /**
+     * Test case 6
+     */
+    @Test
+    public void undoAllowed() {
+        // Pre-condition: List of transactions is empty in model
+        assertEquals(0, model.getTransactions().size());
+
+        // Perform Action: Add transactions
+        controller.addTransaction(50.0, "food");
+        controller.addTransaction(50.0, "travel");
+
+        //total cost in model before undo
+        assertEquals(100.0, getTotalCost(), 0.01);
+
+        // Perform the action: Undo
+        controller.removeTransaction(new int[] {0});
+
+        // Post-condition: List of transactions after undo in model is 1
+        assertEquals(1, model.getTransactions().size());
+        //total cost in model after undo
+        assertEquals(50.0, getTotalCost(), 0.01);
+    }
+
 
 }
