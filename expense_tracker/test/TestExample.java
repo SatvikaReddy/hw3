@@ -3,8 +3,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
+import java.awt.*;
+
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 import org.junit.After;
 import org.junit.Before;
@@ -13,6 +18,8 @@ import org.junit.Test;
 import controller.ExpenseTrackerController;
 import model.ExpenseTrackerModel;
 import model.Transaction;
+import model.Filter.AmountFilter;
+import model.Filter.CategoryFilter;
 import view.ExpenseTrackerView;
 
 
@@ -123,7 +130,9 @@ public class TestExample {
         assertEquals(0.00, totalCost, 0.01);
     }
 
-
+    /**
+     * Test case 1
+     */
     @Test
     public void testViewUpdateAddTransaction() {
         // Pre-condition: The view's table model is empty
@@ -152,9 +161,12 @@ public class TestExample {
         assertEquals(amount, displayedTotalCost, 0.01);
     }
 
+    /**
+     * Test case 2
+     */
     @Test
     public void testInvalidInput() {
-        // Pre Condition: remember the initial total cost
+        // Pre Condition: Check the transactions are empty, and initial total cost
         double initialTotalCost = getTotalCost();
         DefaultTableModel tableModel = view.getTableModel();
         assertEquals(0, tableModel.getRowCount());
@@ -189,6 +201,105 @@ public class TestExample {
                      0, model.getTransactions().size());
         // View shouldn't have changed 
         assertEquals(0, tableModel.getRowCount());
+    }
+
+
+    /**
+     * Test case 3
+     */
+    @Test
+    public void testFilterAmountHighlight() {
+        // Pre-condition: Check the transactions are empty
+        DefaultTableModel tableModel = view.getTableModel();
+        assertEquals(0, tableModel.getRowCount());
+        assertEquals(0, model.getTransactions().size());
+
+        // Perform Action: Add transactions
+        controller.addTransaction(50.0, "food");
+        controller.addTransaction(50.0, "travel");
+        controller.addTransaction(100.0, "food");
+        controller.addTransaction(50.0, "bills");
+
+        // Perform Action: Apply the filter by amount existing in table
+        AmountFilter filterTrue = new AmountFilter(50);
+        List<Transaction> filteredTransactions1 = filterTrue.filter(model.getTransactions());
+
+        // Perform the action: Apply the filter by amount not existing in table
+        AmountFilter filterNull = new AmountFilter(10);
+        List<Transaction> filteredTransactions2 = filterNull.filter(model.getTransactions());
+
+        try {
+            // Perform the action: Apply the filter by amount not existing in table
+            AmountFilter filterInvalid = new AmountFilter(-2);
+            filterInvalid.filter(model.getTransactions());
+
+        } catch (Exception e) {
+            String expectedMessage = "Invalid amount filter";
+            String actualMessage = e.getMessage();
+            assertTrue(actualMessage.contains(expectedMessage));
+        }
+
+        //Post Condition:
+        // Check that filtered Transactions is 3:
+        assertEquals(filteredTransactions1.size(), 3);
+
+        // Check that filtered Transactions is empty:
+        assertEquals(filteredTransactions2.size(), 0);
+
+        //the model data remains same, not affected
+        assertEquals(4, model.getTransactions().size());
+        // 4+1(total row also added)
+        assertEquals(5, tableModel.getRowCount());
+
+    }
+
+    /**
+     * Test case 4
+     */
+    @Test
+    public void testFilterCategoryHighlight() {
+        // Pre-condition: Check the transactions are empty
+        assertEquals(0, model.getTransactions().size());
+        DefaultTableModel tableModel = view.getTableModel();
+
+        // Perform Action: Add transactions
+        controller.addTransaction(50.0, "food");
+        controller.addTransaction(50.0, "travel");
+        controller.addTransaction(100.0, "food");
+        controller.addTransaction(100.0, "food");
+        controller.addTransaction(150.0, "bills");
+
+        // Perform Action:: Apply the filter by amount existing in table
+        CategoryFilter filterTrue = new CategoryFilter("food");
+        List<Transaction> filteredTransactions1 = filterTrue.filter(model.getTransactions());
+
+        // Perform the action: Apply the filter by amount not existing in table
+        CategoryFilter filterNull = new CategoryFilter("entertainment");
+        List<Transaction> filteredTransactions2 = filterNull.filter(model.getTransactions());
+
+        try {
+            // Perform the action: Apply the filter by amount not existing in table
+            CategoryFilter filterInvalid = new CategoryFilter("");
+            List<Transaction> filteredTransactions3 = filterInvalid.filter(model.getTransactions());
+
+        } catch (Exception e) {
+            String expectedMessage = "Invalid category filter";
+            String actualMessage = e.getMessage();
+            assertTrue(actualMessage.contains(expectedMessage));
+        }
+    
+        // Post Condition :
+        // Check that the transactions returned are Transaction 3
+        assertEquals(filteredTransactions1.size(), 3);
+
+        // Check that filtered Transactions is empty:
+        assertEquals(filteredTransactions2.size(), 0);
+
+        //the model data remains same, not affected
+        assertEquals(5, model.getTransactions().size());
+        // 5+1(total row also added)
+        assertEquals(6, tableModel.getRowCount());
+
     }
     
 }
