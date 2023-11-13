@@ -74,7 +74,7 @@ public class ExpenseTrackerApp {
 
    // Add action listener to the "Undo" button
    view.addUndoListener(e -> {
-    int[] rowSelected = view.getJTable().getSelectedRows();
+    int[] rowSelected = view.getTransactionsTable().getSelectedRows();
     controller.removeTransaction(rowSelected);
   });
     

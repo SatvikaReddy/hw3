@@ -105,11 +105,6 @@ public class ExpenseTrackerView extends JFrame {
   /**
  * @return The transactions table view.
  */
-  public JTable getJTable() {
-    return transactionsTable;
-  }
-    
-
   public JTable getTransactionsTable() {
     return transactionsTable;
   }

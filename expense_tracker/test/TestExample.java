@@ -252,7 +252,7 @@ public class TestExample {
         controller.addTransaction(50.0, "bills");
 
         // Retrieve the table from the view
-        JTable transactionsTable = view.getJTable();
+        JTable transactionsTable = view.getTransactionsTable();
 
         Color highlightColor = new Color(173, 255, 168); // Green colour
         Color normalColor = Color.WHITE; 
@@ -302,7 +302,7 @@ public class TestExample {
         controller.addTransaction(50.0, "bills");
 
         // Retrieve the table from the view
-        JTable transactionsTable = view.getJTable();
+        JTable transactionsTable = view.getTransactionsTable();
 
         Color highlightColor = new Color(173, 255, 168); // Green colour
         Color normalColor = Color.WHITE; 
