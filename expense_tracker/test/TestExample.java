@@ -57,7 +57,7 @@ public class TestExample {
 
 
     public void checkTransaction(double amount, String category, Transaction transaction) {
-	assertEquals(amount, transaction.getAmount(), 0.01);
+	    assertEquals(amount, transaction.getAmount(), 0.01);
         assertEquals(category, transaction.getCategory());
         String transactionDateString = transaction.getTimestamp();
         Date transactionDate = null;
@@ -75,26 +75,42 @@ public class TestExample {
         assertTrue(nowDate.getTime() - transactionDate.getTime() < 60000);
     }
 
+    private int countHighlightedRows(JTable table, Color highlightColor, Color normalColor) {
+        int highlightCount = 0;
+        for (int row = 0; row < table.getRowCount(); row++) {
+            for (int col = 0; col < table.getColumnCount(); col++) {
+                Component comp = table.prepareRenderer(table.getCellRenderer(row, col), row, col);
+                if (!comp.getBackground().equals(normalColor)) {
+                    if (comp.getBackground().equals(highlightColor)) {
+                        highlightCount++;
+                        break;
+                    }
+                }
+            }
+        }
+        return highlightCount;
+    }
+
 
     @Test
     public void testAddTransaction() {
         // Pre-condition: List of transactions is empty
         assertEquals(0, model.getTransactions().size());
-    
+
         // Perform the action: Add a transaction
-	double amount = 50.0;
-	String category = "food";
+        double amount = 50.0;
+        String category = "food";
         assertTrue(controller.addTransaction(amount, category));
-    
+
         // Post-condition: List of transactions contains only
-	//                 the added transaction	
+        //                 the added transaction	
         assertEquals(1, model.getTransactions().size());
-    
+
         // Check the contents of the list
-	Transaction firstTransaction = model.getTransactions().get(0);
-	checkTransaction(amount, category, firstTransaction);
-	
-	// Check the total amount
+        Transaction firstTransaction = model.getTransactions().get(0);
+        checkTransaction(amount, category, firstTransaction);
+
+        // Check the total amount
         assertEquals(amount, getTotalCost(), 0.01);
     }
 
@@ -105,20 +121,20 @@ public class TestExample {
         assertEquals(0, model.getTransactions().size());
     
         // Perform the action: Add and remove a transaction
-	double amount = 50.0;
-	String category = "food";
+        double amount = 50.0;
+        String category = "food";
         Transaction addedTransaction = new Transaction(amount, category);
         model.addTransaction(addedTransaction);
-    
+        
         // Pre-condition: List of transactions contains only
-	//                the added transaction
-        assertEquals(1, model.getTransactions().size());
-	Transaction firstTransaction = model.getTransactions().get(0);
-	checkTransaction(amount, category, firstTransaction);
+        //                the added transaction
+            assertEquals(1, model.getTransactions().size());
+        Transaction firstTransaction = model.getTransactions().get(0);
+        checkTransaction(amount, category, firstTransaction);
 
-	assertEquals(amount, getTotalCost(), 0.01);
-	
-	// Perform the action: Remove the transaction
+        assertEquals(amount, getTotalCost(), 0.01);
+        
+        // Perform the action: Remove the transaction
         model.removeTransaction(addedTransaction);
     
         // Post-condition: List of transactions is empty
@@ -142,14 +158,14 @@ public class TestExample {
         // Perform action: Adding a transaction
         double amount = 50.00;
         String category = "food";
-        controller.addTransaction(amount, category); // This should update the model and the view
+        controller.addTransaction(amount, category);
 
-        // Post-condition: Check the view's table model has one row added: 2 exist because 1 is total row
+        // Post-conditions: Check the view's table model has one row added: 2 exist because 1 is total row
         assertEquals(1+1, tableModel.getRowCount());
 
         // Check the contents of the table model
-        double tableAmount = (Double) tableModel.getValueAt(0, 1); // Assuming amount is at column index 1
-        String tableCategory = (String) tableModel.getValueAt(0, 2); // Assuming category is at column index 2
+        double tableAmount = (Double) tableModel.getValueAt(0, 1);
+        String tableCategory = (String) tableModel.getValueAt(0, 2);
 
         // Verify that the view's table model contains the transaction details
         assertEquals(amount, tableAmount, 0.01);
@@ -157,8 +173,8 @@ public class TestExample {
 
         // Verifying the total cost displayed in the view matches the expected value
         // Total cost is displayed in the last row, last column
-        double displayedTotalCost = (Double) tableModel.getValueAt(tableModel.getRowCount() - 1, 3);
-        assertEquals(amount, displayedTotalCost, 0.01);
+        double TotalCostDisplayed = (Double) tableModel.getValueAt(tableModel.getRowCount() - 1, 3);
+        assertEquals(amount, TotalCostDisplayed, 0.01);
     }
 
     /**
@@ -171,49 +187,51 @@ public class TestExample {
         DefaultTableModel tableModel = view.getTableModel();
         assertEquals(0, tableModel.getRowCount());
 
-        // Perform Action: Attempt to add a transaction with invalid amount
+        // Perform Action: ExpenseTrackerModel class addTransaction method to cover it's exceptional situation
+        try{
+            model.addTransaction(null);
+        }catch(Exception e){
+            assertEquals(e.getMessage(),"The new transaction must be non-null.");
+        }
+
+        // Transaction constructor to cover it's exceptional situation for invalid Amount
+        try{
+            Transaction addedTransaction = new Transaction(-1, "food");
+            model.addTransaction(addedTransaction);
+        }catch(Exception e){
+            assertEquals(e.getMessage(),"The amount is not valid.");
+        }
+
+        // Perform Action: Add a transaction with invalid amount , calling controller exception case
         boolean result = controller.addTransaction(-1, "food");
 
-        // Post Condition : Assuming controller.addTransaction() returns false if the transaction is invalid
+        // Transaction constructor to cover it's exceptional situation for invalid Category
+        try{
+            Transaction addedTransaction = new Transaction(50.0, "");
+            model.addTransaction(addedTransaction);
+        }catch(Exception e){
+            assertEquals(e.getMessage(),"The category is not valid.");
+        }
+
+        //Perform Action: Add a transaction with invalid Category
+        boolean result2 = controller.addTransaction(50.0, "");
+
+        // Post Condition : Controller.addTransaction() returns false if the transaction is invalid due to amount
+        assertEquals(result, false);
+        assertEquals(initialTotalCost, getTotalCost(), 0.01);
         // Transactions and Total Cost are unchanged
-        assertEquals("Total cost should not change after invalid input",
-                     initialTotalCost, getTotalCost(), 0.01);
-        assertEquals("Transactions list should not change after invalid input",
-                     0, model.getTransactions().size());
+        assertEquals(0, model.getTransactions().size());
         
         // View shouldn't have changed 
         assertEquals(0, tableModel.getRowCount());
 
-        // Action: Attempt to add a transaction with invalid category
-        double amount = 50.0;
-        String invalidCategory = ""; // Assuming empty category is invalid
-
-        result = controller.addTransaction(amount, invalidCategory);
-
-        // Post Condition : Assuming controller.addTransaction() returns false if the transaction is invalid
+        // Post Condition : Controller.addTransaction() returns false if the transaction is invalid due to category
         // Assert: Transactions and Total Cost are unchanged again
-        assertEquals("Total cost should not change after invalid input",
-                     initialTotalCost, getTotalCost(), 0.01);
-        assertEquals("Transactions list should not change after invalid input",
-                     0, model.getTransactions().size());
+        assertEquals(result2, false);
+        assertEquals(initialTotalCost, getTotalCost(), 0.01);
+        assertEquals(0, model.getTransactions().size());
         // View shouldn't have changed 
         assertEquals(0, tableModel.getRowCount());
-    }
-
-    private int countHighlightedRows(JTable table, Color highlightColor, Color normalColor) {
-        int highlightCount = 0;
-        for (int row = 0; row < table.getRowCount(); row++) {
-            for (int col = 0; col < table.getColumnCount(); col++) {
-                Component comp = table.prepareRenderer(table.getCellRenderer(row, col), row, col);
-                if (!comp.getBackground().equals(normalColor)) {
-                    if (comp.getBackground().equals(highlightColor)) {
-                        highlightCount++;
-                        break;
-                    }
-                }
-            }
-        }
-        return highlightCount;
     }
 
 
@@ -236,29 +254,28 @@ public class TestExample {
         // Retrieve the table from the view
         JTable transactionsTable = view.getJTable();
 
-        // Define the expected colors
-        Color highlightColor = new Color(173, 255, 168); // This color represents a highlighted row
+        Color highlightColor = new Color(173, 255, 168); // Green colour
         Color normalColor = Color.WHITE; 
 
-        // Perform Action: Apply the filter by amount existing in table
+        // Perform Action: Amount exists in the table
         AmountFilter filterTrue = new AmountFilter(50);
         controller.setFilter(filterTrue);
         controller.applyFilter();
 
         int filteredTransactions1 = countHighlightedRows(transactionsTable, highlightColor, normalColor);
 
-        // Perform Action: Apply the filter by amount not existing in table
+        // Perform Action: Amount not existing in the table
         AmountFilter filterNull = new AmountFilter(10);
         controller.setFilter(filterNull);
         controller.applyFilter();
 
         int filteredTransactions2 = countHighlightedRows(transactionsTable, highlightColor, normalColor);
 
-        //Post Condition:
-        // Check that filtered Transactions is 3:
+        //Post Conditions:
+        // Checking that filtered Transactions1 is 3:
         assertEquals(filteredTransactions1, 3);
 
-        // Check that filtered Transactions is empty:
+        // Checking that filtered Transactions2 is empty:
         assertEquals(filteredTransactions2, 0);
 
         //the model data remains same, not affected
@@ -287,29 +304,28 @@ public class TestExample {
         // Retrieve the table from the view
         JTable transactionsTable = view.getJTable();
 
-        // Define the expected colors
-        Color highlightColor = new Color(173, 255, 168); // This color represents a highlighted row
+        Color highlightColor = new Color(173, 255, 168); // Green colour
         Color normalColor = Color.WHITE; 
 
-        // Perform Action: Apply the filter by category existing in table
+        // Perform Action: Category exists in the table
         CategoryFilter filterTrue = new CategoryFilter("food");
         controller.setFilter(filterTrue);
         controller.applyFilter();
 
         int filteredTransactions1 = countHighlightedRows(transactionsTable, highlightColor, normalColor);
 
-        // Perform Action: Apply the filter by category not existing in table
+        // Perform Action: Category doesnt exist in the table
         CategoryFilter filterNull = new CategoryFilter("entertainment");
         controller.setFilter(filterNull);
         controller.applyFilter();
 
         int filteredTransactions2 = countHighlightedRows(transactionsTable, highlightColor, normalColor);
 
-        //Post Condition:
-        // Check that filtered Transactions is 3:
+        //Post Conditions:
+        // Checking that filtered Transactions1 is 3:
         assertEquals(filteredTransactions1, 2);
 
-        // Check that filtered Transactions is empty:
+        // Checking that filtered Transactions2 is empty:
         assertEquals(filteredTransactions2, 0);
 
         //the model data remains same, not affected
@@ -325,6 +341,8 @@ public class TestExample {
     public void undoDisallowed() {
         // Pre-condition: List of transactions is empty
         assertEquals(0, model.getTransactions().size());
+        DefaultTableModel tableModel = view.getTableModel();
+        assertEquals(0, tableModel.getRowCount());
         // Perform the action: try undo
         try {
         controller.removeTransaction(new int[0]);
@@ -334,6 +352,8 @@ public class TestExample {
         }
         // Post-condition: List of transactions is still empty
         assertEquals(0, model.getTransactions().size());
+        // Checking if view is updated
+        assertEquals(0, tableModel.getRowCount());
     }
 
     /**
@@ -343,6 +363,9 @@ public class TestExample {
     public void undoAllowed() {
         // Pre-condition: List of transactions is empty in model
         assertEquals(0, model.getTransactions().size());
+        DefaultTableModel tableModel = view.getTableModel();
+        // Checking view before undo button is clicked
+        assertEquals(0, tableModel.getRowCount());
 
         // Perform Action: Add transactions
         controller.addTransaction(50.0, "food");
@@ -358,6 +381,8 @@ public class TestExample {
         assertEquals(1, model.getTransactions().size());
         //total cost in model after undo
         assertEquals(50.0, getTotalCost(), 0.01);
+        // Checking if view is updated
+        assertEquals(2, tableModel.getRowCount());
     }
 
 
