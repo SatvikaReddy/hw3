@@ -5,6 +5,10 @@ import view.ExpenseTrackerView;
 import model.Filter.AmountFilter;
 import model.Filter.CategoryFilter;
 
+/**
+ * This class initializes and coordinates the model, view, and controller components 
+ * of the Expense Tracker application.
+ */
 public class ExpenseTrackerApp {
 
   /**
@@ -68,6 +72,7 @@ public class ExpenseTrackerApp {
     view.toFront();
    }});
 
+   // Add action listener to the "Undo" button
    view.addUndoListener(e -> {
     int[] rowSelected = view.getJTable().getSelectedRows();
     controller.removeTransaction(rowSelected);

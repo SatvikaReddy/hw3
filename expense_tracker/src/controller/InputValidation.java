@@ -1,9 +1,16 @@
 package controller;
 
 import java.util.Arrays;
-
+/**
+ * This class provides static methods to run validations against the entered amounts and categories.
+ */
 public class InputValidation {
-
+  /**
+   * Validates if the provided amount is within acceptable limits.
+   *
+   * @param amount Transaction amount to be validated.
+   * @return {@code true} if the amount is valid; {@code false} otherwise.
+   */
   public static boolean isValidAmount(double amount) {
     
     // Check range
@@ -18,7 +25,12 @@ public class InputValidation {
     }
     return true;
   }
-
+  /**
+   * Validates if the provided category matches with the predefined valid Words.
+   *
+   * @param category The category string to be validated.
+   * @return {@code true} if the category is valid; {@code false} otherwise.
+   */
   public static boolean isValidCategory(String category) {
 
     if(category == null) {

@@ -11,6 +11,12 @@ import model.ExpenseTrackerModel;
 import model.Transaction;
 import model.Filter.TransactionFilter;
 
+/**
+ * Controller for the ExpenseTracker application.
+ * <p>
+ * This class is used to handle the user inputs, and interacting and updating the model.
+ * </p>
+ */
 public class ExpenseTrackerController {
   
   private ExpenseTrackerModel model;
@@ -22,6 +28,12 @@ public class ExpenseTrackerController {
    */
   private TransactionFilter filter;
 
+  /**
+   * Constructs a new ExpenseTrackerController with arguments as the model and view.
+   *
+   * @param model The model for this controller.
+   * @param view  The view for this controller.
+   */
   public ExpenseTrackerController(ExpenseTrackerModel model, ExpenseTrackerView view) {
     this.model = model;
     this.view = view;
@@ -32,11 +44,21 @@ public class ExpenseTrackerController {
     this.filter = filter;
   }
 
+  /**
+   * This is used to update the transactions view with any new inserted transactions.
+   */
   public void refresh() {
     List<Transaction> transactions = model.getTransactions();
     view.refreshTable(transactions);
   }
 
+  /**
+   * Adds a new transaction when the validation checks for amount and category have been checked with the entered amount and category.
+   *
+   * @param amount   Amount entered for transaction.
+   * @param category Category of the transaction.
+   * @return {@code true} if the values are validated and transaction has been added; {@code false} otherwise.
+   */
   public boolean addTransaction(double amount, String category) {
     if (!InputValidation.isValidAmount(amount)) {
       return false;
@@ -51,7 +73,10 @@ public class ExpenseTrackerController {
     refresh();
     return true;
   }
-
+  
+  /**
+   * Applies a amount or category filter to the transactions based on the view selected by the user.
+   */
   public void applyFilter() {
     //null check for filter
     if(filter!=null){
@@ -72,6 +97,11 @@ public class ExpenseTrackerController {
       view.toFront();}
 
   }
+
+  /**
+   * Removes a transaction selected by the user, checks if undo button is invalid or not as well
+   * @param row the indice of the row for which transactions will be removed
+   */
   public void removeTransaction(int[] row) {
     if (!(row.length < 1)) {
       Transaction t = model.getTransactions().get(row[0]);

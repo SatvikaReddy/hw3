@@ -11,7 +11,9 @@ import java.text.NumberFormat;
 import model.Transaction;
 
 import java.util.List;
-
+/**
+ * The User interface for the Expense Tracker application which contains components to display, add or filter a transaction.
+ */
 public class ExpenseTrackerView extends JFrame {
 
   private JTable transactionsTable;
@@ -29,7 +31,9 @@ public class ExpenseTrackerView extends JFrame {
   private JButton undoBtn;
 
   
-
+  /**
+   * Constructs the main view for the Expense Tracker application.
+   */
   public ExpenseTrackerView() {
     setTitle("Expense Tracker"); // Set title
     setSize(600, 400); // Make GUI larger
@@ -92,11 +96,15 @@ public class ExpenseTrackerView extends JFrame {
   
   
   }
-
+  /**
+   * @return The basic table model for transactions.
+   */
   public DefaultTableModel getTableModel() {
     return model;
   }
-
+  /**
+ * @return The transactions table view.
+ */
   public JTable getJTable() {
     return transactionsTable;
   }
@@ -106,7 +114,9 @@ public class ExpenseTrackerView extends JFrame {
     return (List<Transaction>) transactionsTable;
   }
   
-
+  /**
+   * @return The value entered by the user in the amount field.
+   */
   public double getAmountField() {
     if(amountField.getText().isEmpty()) {
       return 0;
@@ -115,7 +125,11 @@ public class ExpenseTrackerView extends JFrame {
     return amount;
     }
   }
-
+  /**
+   * Sets the amount field .
+   * 
+   * @param amountField The formatted text field to set.
+   */
   public void setAmountField(JFormattedTextField amountField) {
     this.amountField = amountField;
   }
