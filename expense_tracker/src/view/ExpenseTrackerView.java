@@ -129,32 +129,51 @@ public class ExpenseTrackerView extends JFrame {
     this.amountField = amountField;
   }
 
-  
+  /**
+   * Gets the category input from the category field.
+   * 
+   * @return The category input.
+   */
   public String getCategoryField() {
     return categoryField.getText();
   }
 
+  /**
+   * Sets the category field.
+   * 
+   * @param categoryField The category text field to set.
+   */
   public void setCategoryField(JTextField categoryField) {
     this.categoryField = categoryField;
   }
-
+/**
+ * @param listener the ActionListener to be added to the category filter button
+ */
   public void addApplyCategoryFilterListener(ActionListener listener) {
     categoryFilterBtn.addActionListener(listener);
   }
-
+/**
+ * @return the category filter string input by the user
+ */
   public String getCategoryFilterInput() {
     return JOptionPane.showInputDialog(this, "Enter Category Filter:");
 }
 
-
+/**
+ * @param listener the ActionListener to be added to the amount filter button
+ */
   public void addApplyAmountFilterListener(ActionListener listener) {
     amountFilterBtn.addActionListener(listener);
   }
-
+/**
+ * @param listener the ActionListener to be added to the undo filter button
+ */
   public void addUndoListener(ActionListener listener) {
     undoBtn.addActionListener(listener);
   }
-
+/**
+ * @return the Amount filter string input by the user
+ */
   public double getAmountFilterInput() {
     String input = JOptionPane.showInputDialog(this, "Enter Amount Filter:");
     try {
@@ -166,6 +185,10 @@ public class ExpenseTrackerView extends JFrame {
     }
   }
 
+
+  /**
+   * @return undo transaction button.
+   */
   public JButton getUndoBtn() {
     return undoBtn;
   }
@@ -194,11 +217,19 @@ public class ExpenseTrackerView extends JFrame {
   
     }  
   
+  
+  /**
+   * @return Add transactions button.
+   */
   public JButton getAddTransactionBtn() {
     return addTransactionBtn;
   }
 
 
+
+  /**
+   * @param rowIndexes are all the rows we need to highlight
+   */
   public void highlightRows(List<Integer> rowIndexes) {
       // The row indices are being used as hashcodes for the transactions.
       // The row index directly maps to the the transaction index in the list.

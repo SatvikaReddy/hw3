@@ -6,6 +6,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Represents the data model for the Transactions which contains the amount, category and timestam fields.
+ */
 public class Transaction {
 
   public static final SimpleDateFormat dateFormatter = new SimpleDateFormat("dd-MM-yyyy HH:mm");
@@ -30,6 +33,9 @@ public class Transaction {
     this.timestamp = generateTimestamp();
   }
 
+  /**
+   * @return amount of the transaction
+   */
   public double getAmount() {
     return amount;
   }
@@ -38,7 +44,9 @@ public class Transaction {
   // public void setAmount(double amount) {
   //   this.amount = amount;
   // }
-
+  /**
+   * @return category of the transaction
+   */
   public String getCategory() {
     return category;
   }
@@ -46,11 +54,18 @@ public class Transaction {
   // public void setCategory(String category) {
   //   this.category = category; 
   // }
-  
+
+  /**
+   * @return timestamp of the transaction
+   */
   public String getTimestamp() {
     return timestamp;
   }
   //private helper method to generate timestamp
+    /**
+   * Generates the Timestamp at the time transaction was added
+   * @return Formatted timestamp
+   */
   private String generateTimestamp() {
      return dateFormatter.format(new Date());
   }

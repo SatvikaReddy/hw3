@@ -5,7 +5,9 @@ import java.util.List;
 
 import model.Transaction;
 import controller.InputValidation;
-
+/**
+ * This class implements the TransactionFilter and updates the view with the selected Category filter.
+ */
 public class CategoryFilter implements TransactionFilter {
     private String categoryFilter;
 
